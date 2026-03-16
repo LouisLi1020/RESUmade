@@ -11,6 +11,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from '@dnd-kit/utilities'
 import type { Experience } from '@/types/resume'
 import type { Education } from '@/types/resume'
+import { useI18n } from '@/i18n/I18nContext'
 
 interface SortableItemProps {
   id: string
@@ -19,6 +20,7 @@ interface SortableItemProps {
 }
 
 function SortableItem({ id, title, subtitle }: SortableItemProps) {
+  const { t } = useI18n()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -35,7 +37,7 @@ function SortableItem({ id, title, subtitle }: SortableItemProps) {
         className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 touch-none"
         {...attributes}
         {...listeners}
-        aria-label="Drag to reorder"
+        aria-label={t('a11y.dragToReorder')}
       >
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path d="M7 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 6a1 1 0 011 1v1a1 1 0 11-2 0V9a1 1 0 011-1zm0 6a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-12a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zm0 6a1 1 0 00-1 1v1a1 1 0 102 0V9a1 1 0 00-1-1zm0 6a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" />
@@ -55,6 +57,7 @@ interface DraggableExperienceListProps {
 }
 
 export function DraggableExperienceList({ experiences, onReorder }: DraggableExperienceListProps) {
+  const { t } = useI18n()
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -74,7 +77,7 @@ export function DraggableExperienceList({ experiences, onReorder }: DraggableExp
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium text-slate-600">Drag to reorder experience</h3>
+      <h3 className="text-sm font-medium text-slate-600">{t('preview.reorderExperience')}</h3>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
@@ -82,7 +85,7 @@ export function DraggableExperienceList({ experiences, onReorder }: DraggableExp
               <SortableItem
                 key={exp.id}
                 id={exp.id}
-                title={exp.companyOrProjectName || 'Untitled'}
+                title={exp.companyOrProjectName || t('common.untitled')}
                 subtitle={exp.title || exp.timePeriod}
               />
             ))}
@@ -99,6 +102,7 @@ interface DraggableEducationListProps {
 }
 
 export function DraggableEducationList({ education, onReorder }: DraggableEducationListProps) {
+  const { t } = useI18n()
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -118,7 +122,7 @@ export function DraggableEducationList({ education, onReorder }: DraggableEducat
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium text-slate-600">Drag to reorder education</h3>
+      <h3 className="text-sm font-medium text-slate-600">{t('preview.reorderEducation')}</h3>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
@@ -126,7 +130,7 @@ export function DraggableEducationList({ education, onReorder }: DraggableEducat
               <SortableItem
                 key={ed.id}
                 id={ed.id}
-                title={ed.schoolName || 'Untitled'}
+                title={ed.schoolName || t('common.untitled')}
                 subtitle={ed.degreeOrTitle || ed.timePeriod}
               />
             ))}

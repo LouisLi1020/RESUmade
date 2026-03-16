@@ -1,4 +1,5 @@
 import type { Personal, LinkItem } from '@/types/resume'
+import { useI18n } from '@/i18n/I18nContext'
 
 interface Props {
   data: Personal
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function StepPersonalForm({ data, onChange, onNext }: Props) {
+  const { t } = useI18n()
   const addLink = () => {
     const links = [...(data.links ?? []), { label: '', url: '' }]
     onChange({ links })
@@ -23,69 +25,78 @@ export default function StepPersonalForm({ data, onChange, onNext }: Props) {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-lg font-semibold mb-4">Personal</h2>
+      <h2 className="text-lg font-semibold mb-4">{t('personal.heading')}</h2>
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Legal name *</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">{t('personal.legalName')}</label>
           <input
             type="text"
             value={data.legalName}
             onChange={(e) => onChange({ legalName: e.target.value })}
             className="w-full border border-slate-300 rounded px-3 py-2"
-            placeholder="Full name"
+            placeholder={t('personal.placeholderFullName')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Preferred name</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">{t('personal.preferredName')}</label>
           <input
             type="text"
             value={data.preferredName ?? ''}
             onChange={(e) => onChange({ preferredName: e.target.value || undefined })}
             className="w-full border border-slate-300 rounded px-3 py-2"
-            placeholder="What you like to be called"
+            placeholder={t('personal.placeholderPreferred')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Email *</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">{t('personal.email')}</label>
           <input
             type="email"
             value={data.email}
             onChange={(e) => onChange({ email: e.target.value })}
             className="w-full border border-slate-300 rounded px-3 py-2"
-            placeholder="email@example.com"
+            placeholder={t('personal.placeholderEmail')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Phone</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">{t('personal.phone')}</label>
           <input
             type="tel"
             value={data.phone ?? ''}
             onChange={(e) => onChange({ phone: e.target.value || undefined })}
             className="w-full border border-slate-300 rounded px-3 py-2"
-            placeholder="+61 ..."
+            placeholder={t('personal.placeholderPhone')}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Address</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">{t('personal.address')}</label>
           <input
             type="text"
             value={data.address ?? ''}
             onChange={(e) => onChange({ address: e.target.value || undefined })}
             className="w-full border border-slate-300 rounded px-3 py-2"
-            placeholder="City, State"
+            placeholder={t('personal.placeholderAddress')}
           />
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-slate-600">Links (optional)</label>
+            <label className="block text-sm font-medium text-slate-600">{t('personal.links')}</label>
             <button
               type="button"
               onClick={addLink}
               className="text-sm text-slate-600 hover:text-slate-800 underline"
             >
-              + Add link
+              {t('personal.addLink')}
             </button>
           </div>
+          <label className="flex items-center gap-2 mt-2 mb-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!data.showFullUrls}
+              onChange={(e) => onChange({ showFullUrls: e.target.checked })}
+              className="w-4 h-4 rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+            />
+            <span className="text-sm text-slate-600">{t('personal.showFullUrls')}</span>
+          </label>
           {(data.links ?? []).map((link, i) => (
             <div key={i} className="flex gap-2 mb-2">
               <input
@@ -93,14 +104,14 @@ export default function StepPersonalForm({ data, onChange, onNext }: Props) {
                 value={link.label}
                 onChange={(e) => updateLink(i, { label: e.target.value })}
                 className="flex-1 border border-slate-300 rounded px-3 py-2"
-                placeholder="Label (e.g. LinkedIn)"
+                placeholder={t('personal.placeholderLinkLabel')}
               />
               <input
                 type="url"
                 value={link.url}
                 onChange={(e) => updateLink(i, { url: e.target.value })}
                 className="flex-1 border border-slate-300 rounded px-3 py-2"
-                placeholder="https://..."
+                placeholder={t('personal.placeholderLinkUrl')}
               />
               <button
                 type="button"
@@ -120,7 +131,7 @@ export default function StepPersonalForm({ data, onChange, onNext }: Props) {
           disabled={!data.legalName.trim() || !data.email.trim()}
           className="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Next
+          {t('common.next')}
         </button>
       </div>
     </div>

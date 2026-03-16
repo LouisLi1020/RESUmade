@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Resume } from '@/types/resume'
+import { useI18n } from '@/i18n/I18nContext'
 import ResumePreview from './ResumePreview'
 import { DraggableExperienceList } from './DraggableSectionList'
 import { DraggableEducationList } from './DraggableSectionList'
@@ -18,6 +19,7 @@ export default function StepPreview({
   onReorderExperiences,
   onReorderEducation,
 }: StepPreviewProps) {
+  const { t } = useI18n()
   const [saving, setSaving] = useState(false)
   const [exporting, setExporting] = useState(false)
   const [message, setMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
@@ -26,7 +28,7 @@ export default function StepPreview({
 
   const handleSaveDraft = async () => {
     if (!hasElectron) {
-      setMessage({ type: 'err', text: 'Save is only available in the desktop app.' })
+      setMessage({ type: 'err', text: t('preview.saveOnlyDesktop') })
       return
     }
     setSaving(true)
@@ -35,9 +37,9 @@ export default function StepPreview({
       const payload = JSON.stringify(resume)
       const result = await window.resumade!.saveDraft(payload)
       if (result.ok && result.path) {
-        setMessage({ type: 'ok', text: `Saved to ${result.path}` })
+        setMessage({ type: 'ok', text: t('preview.savedTo', { path: result.path }) })
       } else {
-        setMessage({ type: 'err', text: result.error || 'Save cancelled or failed.' })
+        setMessage({ type: 'err', text: result.error || t('preview.saveFailed') })
       }
     } finally {
       setSaving(false)
@@ -46,7 +48,7 @@ export default function StepPreview({
 
   const handleExportPdf = async () => {
     if (!hasElectron) {
-      setMessage({ type: 'err', text: 'Export PDF is only available in the desktop app.' })
+      setMessage({ type: 'err', text: t('preview.exportOnlyDesktop') })
       return
     }
     setExporting(true)
@@ -55,9 +57,9 @@ export default function StepPreview({
       const html = getResumePrintHtml(resume)
       const result = await window.resumade!.exportPdf(html)
       if (result.ok && result.path) {
-        setMessage({ type: 'ok', text: `Exported to ${result.path}` })
+        setMessage({ type: 'ok', text: t('preview.exportTo', { path: result.path }) })
       } else {
-        setMessage({ type: 'err', text: result.error || 'Export cancelled or failed.' })
+        setMessage({ type: 'err', text: result.error || t('preview.exportFailed') })
       }
     } finally {
       setExporting(false)
@@ -67,10 +69,8 @@ export default function StepPreview({
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Preview & Edit</h2>
-        <p className="text-sm text-slate-600 mb-4">
-          Drag the items below to change the order of experience and education on your resume.
-        </p>
+        <h2 className="text-lg font-semibold mb-4">{t('preview.heading')}</h2>
+        <p className="text-sm text-slate-600 mb-4">{t('preview.dragHint')}</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <DraggableExperienceList
@@ -98,7 +98,7 @@ export default function StepPreview({
             onClick={onPrev}
             className="bg-slate-200 text-slate-800 px-4 py-2 rounded hover:bg-slate-300"
           >
-            Back
+            {t('common.back')}
           </button>
           {hasElectron && (
             <>
@@ -108,7 +108,7 @@ export default function StepPreview({
                 disabled={saving}
                 className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-500 disabled:opacity-50"
               >
-                {saving ? 'Saving…' : 'Save draft'}
+                {saving ? t('preview.saving') : t('preview.saveDraft')}
               </button>
               <button
                 type="button"
@@ -116,7 +116,7 @@ export default function StepPreview({
                 disabled={exporting}
                 className="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700 disabled:opacity-50"
               >
-                {exporting ? 'Exporting…' : 'Export PDF'}
+                {exporting ? t('preview.exporting') : t('preview.exportPdf')}
               </button>
             </>
           )}
@@ -124,7 +124,7 @@ export default function StepPreview({
       </div>
 
       <div className="bg-slate-100 rounded-lg p-4">
-        <h3 className="text-sm font-medium text-slate-600 mb-3">Resume preview</h3>
+        <h3 className="text-sm font-medium text-slate-600 mb-3">{t('preview.resumePreview')}</h3>
         <ResumePreview resume={resume} />
       </div>
     </div>

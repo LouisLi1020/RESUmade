@@ -1,4 +1,5 @@
 import type { Resume } from '@/types/resume'
+import { useI18n } from '@/i18n/I18nContext'
 
 interface Props {
   resume: Resume
@@ -6,8 +7,9 @@ interface Props {
 }
 
 export default function ResumePreview({ resume, className = '' }: Props) {
+  const { t } = useI18n()
   const p = resume.personal
-  const name = p.preferredName?.trim() || p.legalName?.trim() || 'Name'
+  const name = p.preferredName?.trim() || p.legalName?.trim() || '—'
 
   return (
     <div
@@ -21,21 +23,21 @@ export default function ResumePreview({ resume, className = '' }: Props) {
         {p.address && <span>{p.address}</span>}
         {p.links?.filter((l) => l.url).map((l, i) => (
           <a key={i} href={l.url} target="_blank" rel="noopener noreferrer" className="text-slate-600 hover:underline">
-            {l.label || l.url}
+            {p.showFullUrls ? (l.label ? `${l.label}: ${l.url}` : l.url) : (l.label || l.url)}
           </a>
         ))}
       </div>
 
       {resume.introduction.trim() && (
         <section className="mb-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Introduction</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{t('resume.introduction')}</h2>
           <p className="text-sm whitespace-pre-wrap">{resume.introduction.trim()}</p>
         </section>
       )}
 
       {resume.experiences.length > 0 && (
         <section className="mb-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Experience</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{t('resume.experience')}</h2>
           <div className="space-y-3">
             {resume.experiences.map((e) => (
               <div key={e.id}>
@@ -62,7 +64,7 @@ export default function ResumePreview({ resume, className = '' }: Props) {
 
       {resume.education.length > 0 && (
         <section className="mb-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Education</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{t('resume.education')}</h2>
           <div className="space-y-3">
             {resume.education.map((e) => (
               <div key={e.id}>
@@ -88,7 +90,7 @@ export default function ResumePreview({ resume, className = '' }: Props) {
 
       {resume.skills.filter(Boolean).length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Skills</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{t('resume.skills')}</h2>
           <div className="flex flex-wrap gap-2">
             {resume.skills.filter(Boolean).map((s, i) => (
               <span key={i} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-sm">

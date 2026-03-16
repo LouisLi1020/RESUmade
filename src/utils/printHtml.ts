@@ -15,7 +15,11 @@ export function getResumePrintHtml(resume: Resume): string {
   if (p.email) contact.push(escapeHtml(p.email))
   if (p.phone) contact.push(escapeHtml(p.phone))
   if (p.address) contact.push(escapeHtml(p.address))
-  if (p.links?.length) p.links.forEach((l) => l.url && contact.push(`<a href="${escapeHtml(l.url)}">${escapeHtml(l.label || l.url)}</a>`))
+  if (p.links?.length) p.links.forEach((l) => {
+    if (!l.url) return
+    const display = p.showFullUrls ? (l.label ? `${l.label}: ${l.url}` : l.url) : (l.label || l.url)
+    contact.push(`<a href="${escapeHtml(l.url)}">${escapeHtml(display)}</a>`)
+  })
 
   let html = `
 <!DOCTYPE html>

@@ -12,6 +12,8 @@ export interface Personal {
   email: string
   address?: string
   links?: LinkItem[]
+  /** When true, resume preview and PDF show full URL for links (for printing); otherwise show label only */
+  showFullUrls?: boolean
 }
 
 export interface Experience {
