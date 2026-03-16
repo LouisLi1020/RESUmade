@@ -32,6 +32,7 @@ export const zhTW: Messages = {
     address: '地址',
     links: '連結（選填）',
     showFullUrls: '列印時展開顯示完整網址',
+    showPreferredName: '在履歷上顯示慣用名稱（如：姓名 (Louis)）',
     addLink: '+ 新增連結',
     placeholderFullName: '請輸入姓名',
     placeholderPreferred: '希望別人怎麼稱呼你',

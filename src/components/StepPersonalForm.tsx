@@ -46,6 +46,17 @@ export default function StepPersonalForm({ data, onChange, onNext }: Props) {
             className="w-full border border-slate-300 rounded px-3 py-2"
             placeholder={t('personal.placeholderPreferred')}
           />
+          {(data.preferredName ?? '').trim() && (
+            <label className="flex items-center gap-2 mt-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={data.showPreferredName !== false}
+                onChange={(e) => onChange({ showPreferredName: e.target.checked })}
+                className="w-4 h-4 rounded border-slate-300 text-slate-800 focus:ring-slate-500"
+              />
+              <span className="text-sm text-slate-600">{t('personal.showPreferredName')}</span>
+            </label>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-1">{t('personal.email')}</label>

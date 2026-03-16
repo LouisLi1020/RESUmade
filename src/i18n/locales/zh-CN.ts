@@ -32,6 +32,7 @@ export const zhCN: Messages = {
     address: '地址',
     links: '链接（选填）',
     showFullUrls: '打印时展开显示完整网址',
+    showPreferredName: '在简历上显示常用名称（如：姓名 (Louis)）',
     addLink: '+ 添加链接',
     placeholderFullName: '请输入姓名',
     placeholderPreferred: '希望别人如何称呼你',

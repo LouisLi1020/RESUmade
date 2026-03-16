@@ -32,6 +32,7 @@ export const en: Messages = {
     address: 'Address',
     links: 'Links (optional)',
     showFullUrls: 'Show full URL when printing',
+    showPreferredName: 'Show preferred name on resume (e.g. Legal Name (Preferred))',
     addLink: '+ Add link',
     placeholderFullName: 'Full name',
     placeholderPreferred: 'What you like to be called',

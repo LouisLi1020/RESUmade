@@ -32,6 +32,7 @@ export type Messages = {
     address: string
     links: string
     showFullUrls: string
+    showPreferredName: string
     addLink: string
     placeholderFullName: string
     placeholderPreferred: string

@@ -8,18 +8,31 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
 }
 
+const svgEmail = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+const svgPhone = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'
+const svgLocation = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+const svgGlobe = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
+
+function contactItem(icon: string, content: string): string {
+  return `<span class="ci">${icon}<span>${content}</span></span>`
+}
+
 export function getResumePrintHtml(resume: Resume): string {
   const p = resume.personal
-  const name = p.preferredName?.trim() || p.legalName?.trim() || 'Name'
-  const contact: string[] = []
-  if (p.email) contact.push(escapeHtml(p.email))
-  if (p.phone) contact.push(escapeHtml(p.phone))
-  if (p.address) contact.push(escapeHtml(p.address))
+  const legal = p.legalName?.trim() || ''
+  const preferred = (p.showPreferredName !== false && p.preferredName?.trim()) ? p.preferredName.trim() : ''
+  const name = legal ? (preferred ? `${legal} (${preferred})` : legal) : 'Name'
+
+  const contactParts: string[] = []
+  if (p.email) contactParts.push(contactItem(svgEmail, escapeHtml(p.email)))
+  if (p.phone) contactParts.push(contactItem(svgPhone, escapeHtml(p.phone)))
+  if (p.address) contactParts.push(contactItem(svgLocation, escapeHtml(p.address)))
   if (p.links?.length) p.links.forEach((l) => {
     if (!l.url) return
     const display = p.showFullUrls ? (l.label ? `${l.label}: ${l.url}` : l.url) : (l.label || l.url)
-    contact.push(`<a href="${escapeHtml(l.url)}">${escapeHtml(display)}</a>`)
+    contactParts.push(`<a href="${escapeHtml(l.url)}" class="ci">${svgGlobe}<span>${escapeHtml(display)}</span></a>`)
   })
+  const contactHtml = contactParts.length ? `<div class="contact">${contactParts.join('')}</div>` : ''
 
   let html = `
 <!DOCTYPE html>
@@ -31,9 +44,10 @@ export function getResumePrintHtml(resume: Resume): string {
     * { box-sizing: border-box; }
     body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #1e293b; margin: 0; padding: 24px 32px; max-width: 210mm; }
     h1 { font-size: 18px; margin: 0 0 4px 0; font-weight: 600; }
-    .contact { color: #64748b; margin-bottom: 12px; }
+    .contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; color: #64748b; margin-bottom: 12px; }
+    .contact .ci { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .contact .ci svg { flex-shrink: 0; color: #475569; }
     .contact a { color: #475569; text-decoration: none; }
-    .contact span + span::before { content: " · "; }
     section { margin-bottom: 12px; }
     section h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin: 0 0 8px 0; }
     .intro { margin-bottom: 12px; }
@@ -47,7 +61,7 @@ export function getResumePrintHtml(resume: Resume): string {
 </head>
 <body>
   <h1>${escapeHtml(name)}</h1>
-  <div class="contact">${contact.join(' ')}</div>
+  ${contactHtml}
   ${resume.introduction.trim() ? `<section class="intro"><h2>Introduction</h2><p>${escapeHtml(resume.introduction.trim())}</p></section>` : ''}
   ${resume.experiences.length ? `
   <section>

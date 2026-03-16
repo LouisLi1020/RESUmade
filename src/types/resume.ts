@@ -14,6 +14,8 @@ export interface Personal {
   links?: LinkItem[]
   /** When true, resume preview and PDF show full URL for links (for printing); otherwise show label only */
   showFullUrls?: boolean
+  /** When true, show preferred name on resume after legal name, e.g. "ChengYi Li (Louis Li)" */
+  showPreferredName?: boolean
 }
 
 export interface Experience {
