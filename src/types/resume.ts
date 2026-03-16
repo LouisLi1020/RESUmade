@@ -1,8 +1,11 @@
 export type ExperienceType = 'work' | 'project'
 
+export type LinkKind = 'link' | 'linkedin' | 'instagram' | 'spotify' | 'github' | 'x' | 'facebook'
+
 export interface LinkItem {
-  label: string
   url: string
+  /** Optional explicit kind; if missing, UI may infer from URL for legacy data */
+  kind?: LinkKind
 }
 
 export interface Personal {
@@ -12,7 +15,7 @@ export interface Personal {
   email: string
   address?: string
   links?: LinkItem[]
-  /** When true, resume preview and PDF show full URL for links (for printing); otherwise show label only */
+  /** When true, resume preview and PDF show URL text for links (for printing); otherwise show only icon */
   showFullUrls?: boolean
   /** When true, show preferred name on resume after legal name, e.g. "ChengYi Li (Louis Li)" */
   showPreferredName?: boolean

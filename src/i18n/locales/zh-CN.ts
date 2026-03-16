@@ -39,14 +39,17 @@ export const zhCN: Messages = {
     placeholderEmail: 'email@example.com',
     placeholderPhone: '+86 ...',
     placeholderAddress: '城市、地区',
-    placeholderLinkLabel: '标签（如 LinkedIn）',
     placeholderLinkUrl: 'https://...',
+    linkType: {
+      link: '普通链接',
+    },
   },
   introduction: {
     heading: '自我介绍',
     wordHint: '约 {max} 字以内。',
     placeholder: '写一段简短的自我介绍…',
     words: '字',
+    richTextHint: '支持 **粗体**、*斜体*、__下划线__（简易 Markdown）。',
   },
   experience: {
     heading: '工作 / 项目经历',
@@ -93,6 +96,10 @@ export const zhCN: Messages = {
     exportTo: '已导出至 {path}',
     saveFailed: '保存已取消或失败。',
     exportFailed: '导出已取消或失败。',
+    styleLabel: '样式',
+    styleClean: 'Clean',
+    styleCompact: 'Compact（内容较多）',
+    styleClassic: 'Classic（正式）',
   },
   resume: {
     introduction: '自我介绍',

@@ -39,14 +39,17 @@ export const en: Messages = {
     placeholderEmail: 'email@example.com',
     placeholderPhone: '+61 ...',
     placeholderAddress: 'City, State',
-    placeholderLinkLabel: 'Label (e.g. LinkedIn)',
     placeholderLinkUrl: 'https://...',
+    linkType: {
+      link: 'Link (any)',
+    },
   },
   introduction: {
     heading: 'Introduction',
     wordHint: 'About ~{max} words.',
     placeholder: 'Write a short introduction about yourself...',
     words: 'words',
+    richTextHint: 'Supports **bold**, *italic*, and __underline__ using simple Markdown.',
   },
   experience: {
     heading: 'Work / Project Experience',
@@ -93,6 +96,10 @@ export const en: Messages = {
     exportTo: 'Exported to {path}',
     saveFailed: 'Save cancelled or failed.',
     exportFailed: 'Export cancelled or failed.',
+    styleLabel: 'Style',
+    styleClean: 'Clean',
+    styleCompact: 'Compact',
+    styleClassic: 'Classic',
   },
   resume: {
     introduction: 'Introduction',

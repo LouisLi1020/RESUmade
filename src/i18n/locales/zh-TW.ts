@@ -39,14 +39,17 @@ export const zhTW: Messages = {
     placeholderEmail: 'email@example.com',
     placeholderPhone: '+886 ...',
     placeholderAddress: '縣市、地區',
-    placeholderLinkLabel: '標籤（如 LinkedIn）',
     placeholderLinkUrl: 'https://...',
+    linkType: {
+      link: '一般連結',
+    },
   },
   introduction: {
     heading: '自我介紹',
     wordHint: '約 {max} 字以內。',
     placeholder: '寫一段簡短的自我介紹…',
     words: '字',
+    richTextHint: '支援 **粗體**、*斜體*、__底線__（簡易 Markdown）。',
   },
   experience: {
     heading: '工作 / 專案經歷',
@@ -93,6 +96,10 @@ export const zhTW: Messages = {
     exportTo: '已匯出至 {path}',
     saveFailed: '儲存已取消或失敗。',
     exportFailed: '匯出已取消或失敗。',
+    styleLabel: '樣式',
+    styleClean: 'Clean（預設）',
+    styleCompact: 'Compact（內容較多）',
+    styleClassic: 'Classic（正式）',
   },
   resume: {
     introduction: '自我介紹',

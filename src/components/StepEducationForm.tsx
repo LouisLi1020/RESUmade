@@ -1,5 +1,6 @@
 import type { Education } from '@/types/resume'
 import { useI18n } from '@/i18n/I18nContext'
+import { inlineMarkdownToHtml } from '@/utils/markdown'
 
 interface Props {
   education: Education[]
@@ -97,21 +98,31 @@ export default function StepEducationForm({
               <div className="mt-2">
                 <label className="block text-sm text-slate-600 mb-1">{t('education.detailsLabel')}</label>
                 {ed.details.map((d, i) => (
-                  <div key={i} className="flex gap-2 mb-1">
-                    <input
-                      type="text"
-                      value={d}
-                      onChange={(e) => updateDetail(ed.id, i, e.target.value)}
-                      className="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm"
-                      placeholder="•"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeDetail(ed.id, i)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      ×
-                    </button>
+                  <div key={i} className="mb-2">
+                    <div className="flex gap-2 mb-1">
+                      <input
+                        type="text"
+                        value={d}
+                        onChange={(e) => updateDetail(ed.id, i, e.target.value)}
+                        className="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm"
+                        placeholder="•"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeDetail(ed.id, i)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    {d.trim() && (
+                      <div className="ml-1 pl-3 border-l border-dashed border-slate-200">
+                        <div
+                          className="text-xs text-slate-600"
+                          dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(d) }}
+                        />
+                      </div>
+                    )}
                   </div>
                 ))}
                 <button

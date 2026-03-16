@@ -1,4 +1,4 @@
-import type { Personal, LinkItem } from '@/types/resume'
+import type { Personal, LinkItem, LinkKind } from '@/types/resume'
 import { useI18n } from '@/i18n/I18nContext'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 export default function StepPersonalForm({ data, onChange, onNext }: Props) {
   const { t } = useI18n()
   const addLink = () => {
-    const links = [...(data.links ?? []), { label: '', url: '' }]
+    const links = [...(data.links ?? []), { url: '', kind: 'link' as LinkKind }]
     onChange({ links })
   }
   const updateLink = (i: number, patch: Partial<LinkItem>) => {
@@ -22,6 +22,16 @@ export default function StepPersonalForm({ data, onChange, onNext }: Props) {
     const links = (data.links ?? []).filter((_, idx) => idx !== i)
     onChange({ links })
   }
+
+  const linkKindOptions: { value: LinkKind; label: string }[] = [
+    { value: 'link', label: t('personal.linkType.link') },
+    { value: 'linkedin', label: 'LinkedIn' },
+    { value: 'github', label: 'GitHub' },
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'x', label: 'X / Twitter' },
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'spotify', label: 'Spotify' },
+  ]
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -110,13 +120,17 @@ export default function StepPersonalForm({ data, onChange, onNext }: Props) {
           </label>
           {(data.links ?? []).map((link, i) => (
             <div key={i} className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={link.label}
-                onChange={(e) => updateLink(i, { label: e.target.value })}
-                className="flex-1 border border-slate-300 rounded px-3 py-2"
-                placeholder={t('personal.placeholderLinkLabel')}
-              />
+              <select
+                value={link.kind ?? 'link'}
+                onChange={(e) => updateLink(i, { kind: e.target.value as LinkKind })}
+                className="border border-slate-300 rounded px-2 py-2 text-sm bg-white"
+              >
+                {linkKindOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
               <input
                 type="url"
                 value={link.url}
