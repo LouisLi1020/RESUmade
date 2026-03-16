@@ -3,7 +3,7 @@
 一款幫你快速產生**一頁式履歷**的桌面應用程式。  
 依照步驟輸入個人資料、經歷與技能，在預覽畫面拖拉排序各模組，即可匯出 PDF 履歷。
 
-**目前狀態**：v0.1.0，MVP 已實現並可正常開發／打包；程式已推送到 [GitHub](https://github.com/LouisLi1020/RESUmade)。
+**目前狀態**：v0.2.x，已可日常使用與打包；程式已推送到 [GitHub](https://github.com/LouisLi1020/RESUmade)。
 
 ---
 
@@ -15,8 +15,12 @@
 - **離線使用**：資料僅存本機，無需後端
 - **匯出 PDF**：一鍵匯出，可自選儲存路徑
 - **草稿存讀**：存成 `.resumade.json`，之後可「Open draft」繼續編輯
+- **多語系介面**：內建 English / 繁體中文 / 简体中文，可在右上角切換
+- **社群連結圖標**：支援 LinkedIn / GitHub / X / Instagram / Facebook / Spotify 等 icon，並可選擇是否顯示網址文字
+- **樣式風格切換**：Clean / Compact / Classic 三種 style bundle，同步套用在預覽與 PDF
+- **輕量排版標記**：Introduction 與各段落 bullet 支援簡易 Markdown（**粗體** / *斜體* / __底線__）
 
-> 目前介面為英文（按鈕與欄位 label）。多語系（繁中／簡中／英）規劃中。
+> 目前表單主要以英文欄位命名，但文案已支援繁中／簡中／英文切換。
 
 ---
 
@@ -136,9 +140,31 @@ npm run dist
 
 ## 後續規劃
 
-- **多語系**：繁中、簡中、英文介面
 - **多模板**：多種履歷版型可選
+- **更多排版控制**：字級微調、段落間距預設組合
 - **匯出**：Word / Markdown 等格式（可選）
+
+---
+
+## English overview
+
+RESUmade is a lightweight **one-page resume** desktop app.  
+It guides you through Personal / Introduction / Experience / Education / Skills, lets you reorder sections visually, and exports a single-page PDF.
+
+### Current capabilities
+
+- **Guided steps**: Personal → Introduction → Experience → Education → Skills  
+- **Drag & drop ordering** for experience and education blocks  
+- **Live Preview & Edit** with on-screen resume preview  
+- **Offline-first**: data stays on your machine, no backend  
+- **PDF export** via Electron `printToPDF()`  
+- **Draft save/load** as `.resumade.json`  
+- **Multi-language UI**: English / Traditional Chinese / Simplified Chinese  
+- **Social links with icons** (LinkedIn, GitHub, X, Instagram, Facebook, Spotify, generic link)  
+- **Style bundles**: Clean / Compact / Classic, shared by preview and PDF  
+- **Lightweight Markdown formatting** in introduction and bullet points (**bold**, *italic*, __underline__)  
+
+For more details and releases, see the [GitHub repo](https://github.com/LouisLi1020/RESUmade).
 
 ---
 
