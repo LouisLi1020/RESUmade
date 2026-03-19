@@ -29,22 +29,11 @@ export interface OptimizeATSPayload {
   target?: string | null
 }
 
-function hasDesktopAI(): boolean {
-  return typeof window !== 'undefined' && !!window.resumade?.aiAnalyzeJD && !!window.resumade?.aiOptimizeATS
-}
-
 /**
- * 共用 analyzer 介面：未來會由 LLM / API 或 local model 實作。
- * 目前為 LLM-ready 結構的前端 mock，方便先打通 UI flow。
+ * 共用 analyzer 介面：目前僅使用本地 heuristic 模型，不呼叫任何外部 API。
+ * 之後若要接 LLM / local model，可以在此檔案替換實作。
  */
 export async function analyzeResumeAgainstJD(payload: AnalyzeJDPayload): Promise<JdMatchScores> {
-  if (hasDesktopAI()) {
-    const masked = maskPersonalInfo(payload.resume)
-    const resp = await window.resumade!.aiAnalyzeJD({ resume: masked, jobDescription: payload.jobDescription })
-    if (resp.ok && resp.result) return resp.result as JdMatchScores
-    throw new Error(resp.error || 'AI analysis failed')
-  }
-
   const masked = maskPersonalInfo(payload.resume)
   const jd = payload.jobDescription.toLowerCase()
 
@@ -104,17 +93,9 @@ export async function analyzeResumeAgainstJD(payload: AnalyzeJDPayload): Promise
 }
 
 /**
- * ATS optimizer analyzer 介面：未來應由 LLM / API 或 local model 實作。
- * 目前是 heuristic mock，僅為了讓 UI、資料結構與 masking flow 先完成。
+ * ATS optimizer analyzer 介面：目前是 heuristic 模型，不呼叫任何外部服務。
  */
 export async function optimizeResumeForATS(payload: OptimizeATSPayload): Promise<AtsOptimizationResult> {
-  if (hasDesktopAI()) {
-    const masked = maskPersonalInfo(payload.resume)
-    const resp = await window.resumade!.aiOptimizeATS({ resume: masked, target: payload.target ?? null })
-    if (resp.ok && resp.result) return resp.result as AtsOptimizationResult
-    throw new Error(resp.error || 'AI optimization failed')
-  }
-
   const masked = maskPersonalInfo(payload.resume)
   const target = (payload.target ?? '').trim()
 
