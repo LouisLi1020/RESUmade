@@ -11,6 +11,7 @@
 
 - **引導式表單**：Personal → Introduction → Experience → Education → Skills，分步填寫
 - **拖拉排序**：工作經歷、教育等段落可拖曳調整順序
+- **整體段落排序**：在 Preview & Edit 中，可重排 Introduction / Experience / Education / Skills 四大區塊；PDF 匯出遵守同一順序
 - **即時預覽**：Preview & Edit 步驟所見即所得
 - **離線使用**：資料僅存本機，無需後端
 - **匯出 PDF**：一鍵匯出，可自選儲存路徑
@@ -19,6 +20,8 @@
 - **社群連結圖標**：支援 LinkedIn / GitHub / X / Instagram / Facebook / Spotify 等 icon，並可選擇是否顯示網址文字
 - **樣式風格切換**：Clean / Compact / Classic 三種 style bundle，同步套用在預覽與 PDF
 - **輕量排版標記**：Introduction 與各段落 bullet 支援簡易 Markdown（**粗體** / *斜體* / __底線__）
+- **本地 ATS / JD 分析（實驗性）**：在 Preview & Edit 的 Advanced tools 中，可對履歷與 JD 做關鍵字重疊度分析，產生 heuristic 分數與建議（完全離線、不呼叫外部 API）
+- **本地技能建議**：從 Experience 的職稱與 bullet 以關鍵字規則抽出常見技術與軟實力，提供「Suggest tech / skills」可勾選加入 Skills，不會覆蓋原有輸入
 
 > 目前表單主要以英文欄位命名，但文案已支援繁中／簡中／英文切換。
 
@@ -132,9 +135,12 @@ npm run dist
 1. 開啟 RESUmade 桌面應用
 2. 可點「Open draft」開啟先前儲存的 `.resumade.json`
 3. 依序填寫：Personal → Introduction → Experience → Education → Skills
-4. 進入 **Preview & Edit**：拖拉 Experience / Education 區塊調整順序，下方即時預覽
+4. 進入 **Preview & Edit**：
+   - 拖拉 Experience / Education 區塊調整順序
+   - 使用「Reorder sections」調整 Introduction / Experience / Education / Skills 的整體順序
+   - 可在 Advanced tools 中試用本地 ATS / JD heuristic 分析（選用）
 5. **Save draft**：存成 JSON，之後可再開啟編輯
-6. **Export PDF**：選擇儲存路徑後產生一頁式履歷 PDF
+6. **Export PDF**：選擇儲存路徑後產生一頁式履歷 PDF（順序會與 Preview 一致）
 
 ---
 
@@ -155,6 +161,7 @@ It guides you through Personal / Introduction / Experience / Education / Skills,
 
 - **Guided steps**: Personal → Introduction → Experience → Education → Skills  
 - **Drag & drop ordering** for experience and education blocks  
+- **Section-level ordering**: reorder Introduction / Experience / Education / Skills in Preview; PDF follows the same order  
 - **Live Preview & Edit** with on-screen resume preview  
 - **Offline-first**: data stays on your machine, no backend  
 - **PDF export** via Electron `printToPDF()`  
@@ -163,6 +170,8 @@ It guides you through Personal / Introduction / Experience / Education / Skills,
 - **Social links with icons** (LinkedIn, GitHub, X, Instagram, Facebook, Spotify, generic link)  
 - **Style bundles**: Clean / Compact / Classic, shared by preview and PDF  
 - **Lightweight Markdown formatting** in introduction and bullet points (**bold**, *italic*, __underline__)  
+- **Local ATS / JD heuristics (experimental)**: simple on-device keyword overlap analysis with scores and suggestions, no external API calls  
+- **Local skill suggestions**: suggest tech / soft skills from experience titles and bullets via keyword rules; users choose which to add to their Skills  
 
 For more details and releases, see the [GitHub repo](https://github.com/LouisLi1020/RESUmade).
 
