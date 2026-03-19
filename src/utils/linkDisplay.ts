@@ -27,21 +27,34 @@ export function inferLinkKindFromUrl(url: string): LinkKind {
   return 'link'
 }
 
-function formatUrlDisplay(parsed: URL, full: boolean): string {
-  const host = parsed.hostname
-  const path = parsed.pathname === '/' ? '' : parsed.pathname
+/**
+ * Returns the meaningful part of a URL for display (e.g. icon already tells the site).
+ * LinkedIn → "in/username", GitHub → "username", generic → "domain.com/path" (no protocol/www).
+ */
+function formatUrlDisplayByKind(parsed: URL, kind: LinkKind): string {
+  const host = parsed.hostname.replace(/^www\./i, '')
+  const path = parsed.pathname.replace(/\/+$/, '') // trim trailing slash
+  const pathSegments = path.split('/').filter(Boolean)
 
-  if (full) {
-    const base = `${host}${path}`
-    return base || host
+  switch (kind) {
+    case 'linkedin':
+      // e.g. /in/username → "in/username"
+      return pathSegments.length ? pathSegments.join('/') : host
+    case 'github':
+      // e.g. /username or /username/repo → "username"
+      return pathSegments[0] ?? host
+    case 'x':
+    case 'instagram':
+    case 'facebook':
+      // e.g. /username → "username"
+      return pathSegments[0] ?? host
+    case 'spotify':
+      // e.g. /user/xxx, /artist/xxx → "user/xxx" or "artist/xxx"
+      return pathSegments.length ? pathSegments.join('/') : host
+    case 'link':
+    default:
+      return path ? `${host}${path}` : host
   }
-
-  // Simplified: host + first-level path, no query/hash
-  if (!path) return host
-
-  // Remove trailing slash for display
-  const cleanPath = path.replace(/\/+$/, '')
-  return `${host}${cleanPath}`
 }
 
 export function getLinkDisplayText(link: LinkItem, options?: { showFullUrls?: boolean }): string {
@@ -51,7 +64,7 @@ export function getLinkDisplayText(link: LinkItem, options?: { showFullUrls?: bo
   const parsed = normalizeUrl(url)
   if (!parsed) return url
 
-  const full = !!options?.showFullUrls
-  return formatUrlDisplay(parsed, full)
+  const kind: LinkKind = link.kind ?? inferLinkKindFromUrl(url)
+  return formatUrlDisplayByKind(parsed, kind)
 }
 

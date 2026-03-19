@@ -100,6 +100,10 @@ export const zhTW: Messages = {
     styleClean: 'Clean（預設）',
     styleCompact: 'Compact（內容較多）',
     styleClassic: 'Classic（正式）',
+    advancedTools: '進階工具',
+    atsOptimizer: 'ATS 優化',
+    jdMatcher: '職缺匹配',
+    advancedToolsDescription: '針對 ATS 優化履歷，或與職缺描述進行匹配分析。（即將推出）',
   },
   resume: {
     introduction: '自我介紹',

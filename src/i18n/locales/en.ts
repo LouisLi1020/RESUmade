@@ -100,6 +100,10 @@ export const en: Messages = {
     styleClean: 'Clean',
     styleCompact: 'Compact',
     styleClassic: 'Classic',
+    advancedTools: 'Advanced tools',
+    atsOptimizer: 'ATS Optimizer',
+    jdMatcher: 'JD Matcher',
+    advancedToolsDescription: 'Optimize your resume for ATS or match it against a job description. (Coming soon.)',
   },
   resume: {
     introduction: 'Introduction',

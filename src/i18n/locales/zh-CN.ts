@@ -100,6 +100,10 @@ export const zhCN: Messages = {
     styleClean: 'Clean',
     styleCompact: 'Compact（内容较多）',
     styleClassic: 'Classic（正式）',
+    advancedTools: '进阶工具',
+    atsOptimizer: 'ATS 优化',
+    jdMatcher: '职位匹配',
+    advancedToolsDescription: '针对 ATS 优化简历，或与职位描述进行匹配分析。（即将推出）',
   },
   resume: {
     introduction: '自我介绍',

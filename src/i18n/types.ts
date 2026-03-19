@@ -39,14 +39,17 @@ export type Messages = {
     placeholderEmail: string
     placeholderPhone: string
     placeholderAddress: string
-    placeholderLinkLabel: string
     placeholderLinkUrl: string
+    linkType: {
+      link: string
+    }
   }
   introduction: {
     heading: string
     wordHint: string
     placeholder: string
     words: string
+    richTextHint: string
   }
   experience: {
     heading: string
@@ -93,6 +96,14 @@ export type Messages = {
     exportTo: string
     saveFailed: string
     exportFailed: string
+    styleLabel: string
+    styleClean: string
+    styleCompact: string
+    styleClassic: string
+    advancedTools: string
+    atsOptimizer: string
+    jdMatcher: string
+    advancedToolsDescription: string
   }
   resume: {
     introduction: string
