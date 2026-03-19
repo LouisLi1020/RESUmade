@@ -85,9 +85,11 @@ export default function App() {
         {stepId === 'experience' && (
           <StepExperienceForm
             experiences={form.resume.experiences}
+            skills={form.resume.skills}
             onAdd={form.addExperience}
             onUpdate={form.updateExperience}
             onRemove={form.removeExperience}
+            onChangeSkills={form.setSkills}
             onPrev={goPrev}
             onNext={goNext}
           />

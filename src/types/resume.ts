@@ -40,6 +40,8 @@ export interface Education {
   details: string[]
 }
 
+export type ResumeSectionId = 'introduction' | 'experience' | 'education' | 'skills'
+
 export interface Resume {
   personal: Personal
   introduction: string
@@ -47,6 +49,13 @@ export interface Resume {
   education: Education[]
   skills: string[]
 }
+
+export const defaultSectionsOrder: ResumeSectionId[] = [
+  'introduction',
+  'experience',
+  'education',
+  'skills',
+]
 
 export const createEmptyPersonal = (): Personal => ({
   legalName: '',

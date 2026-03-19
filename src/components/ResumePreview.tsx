@@ -1,4 +1,5 @@
-import type { Resume } from '@/types/resume'
+import type { Resume, ResumeSectionId } from '@/types/resume'
+import { defaultSectionsOrder } from '@/types/resume'
 import { useI18n } from '@/i18n/I18nContext'
 import { getLinkDisplayText, inferLinkKindFromUrl } from '@/utils/linkDisplay'
 import { inlineMarkdownToHtml } from '@/utils/markdown'
@@ -139,7 +140,12 @@ interface Props {
   styleVariant?: ResumeStyleVariant
 }
 
-export default function ResumePreview({ resume, className = '', styleVariant = 'clean' }: Props) {
+export default function ResumePreview({
+  resume,
+  className = '',
+  styleVariant = 'clean',
+  sectionsOrder,
+}: Props & { sectionsOrder?: ResumeSectionId[] }) {
   const { t } = useI18n()
   const p = resume.personal
   const legal = p.legalName?.trim() || '—'
@@ -148,6 +154,10 @@ export default function ResumePreview({ resume, className = '', styleVariant = '
 
   const isCompact = styleVariant === 'compact'
   const isClassic = styleVariant === 'classic'
+
+  const order: ResumeSectionId[] = sectionsOrder && sectionsOrder.length
+    ? sectionsOrder
+    : defaultSectionsOrder
 
   return (
     <div
@@ -207,119 +217,132 @@ export default function ResumePreview({ resume, className = '', styleVariant = '
           })}
       </div>
 
-      {resume.introduction.trim() && (
-        <section className={isCompact ? 'mb-3' : 'mb-4'}>
-          <h2
-            className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
-              isCompact ? 'mb-1.5' : 'mb-2'
-            } ${isClassic ? 'font-serif' : ''}`}
-          >
-            {t('resume.introduction')}
-          </h2>
-          <p
-            className={`${isCompact ? 'text-xs' : 'text-sm'}`}
-            dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(resume.introduction.trim()) }}
-          />
-        </section>
-      )}
-
-      {resume.experiences.length > 0 && (
-        <section className={isCompact ? 'mb-3' : 'mb-4'}>
-          <h2
-            className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
-              isCompact ? 'mb-1.5' : 'mb-2'
-            } ${isClassic ? 'font-serif' : ''}`}
-          >
-            {t('resume.experience')}
-          </h2>
-          <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
-            {resume.experiences.map((e) => (
-              <div key={e.id}>
-                <div className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>
-                  {e.companyOrProjectName}
-                  {e.title && ` – ${e.title}`}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {e.timePeriod}
-                  {e.subtitle && ` · ${e.subtitle}`}
-                </div>
-                {e.details.filter(Boolean).length > 0 && (
-                  <ul
-                    className={`mt-1 list-disc list-inside text-slate-600 ${
-                      isCompact ? 'text-xs' : 'text-sm'
-                    }`}
-                  >
-                    {e.details.filter(Boolean).map((d, i) => (
-                      <li
-                        key={i}
-                        dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(d) }}
-                      />
-                    ))}
-                  </ul>
-                )}
+      {order.map((sec) => {
+        if (sec === 'introduction') {
+          if (!resume.introduction.trim()) return null
+          return (
+            <section key={sec} className={isCompact ? 'mb-3' : 'mb-4'}>
+              <h2
+                className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  isCompact ? 'mb-1.5' : 'mb-2'
+                } ${isClassic ? 'font-serif' : ''}`}
+              >
+                {t('resume.introduction')}
+              </h2>
+              <p
+                className={`${isCompact ? 'text-xs' : 'text-sm'}`}
+                dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(resume.introduction.trim()) }}
+              />
+            </section>
+          )
+        }
+        if (sec === 'experience') {
+          if (!resume.experiences.length) return null
+          return (
+            <section key={sec} className={isCompact ? 'mb-3' : 'mb-4'}>
+              <h2
+                className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  isCompact ? 'mb-1.5' : 'mb-2'
+                } ${isClassic ? 'font-serif' : ''}`}
+              >
+                {t('resume.experience')}
+              </h2>
+              <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
+                {resume.experiences.map((e) => (
+                  <div key={e.id}>
+                    <div className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                      {e.companyOrProjectName}
+                      {e.title && ` – ${e.title}`}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {e.timePeriod}
+                      {e.subtitle && ` · ${e.subtitle}`}
+                    </div>
+                    {e.details.filter(Boolean).length > 0 && (
+                      <ul
+                        className={`mt-1 list-disc list-inside text-slate-600 ${
+                          isCompact ? 'text-xs' : 'text-sm'
+                        }`}
+                      >
+                        {e.details.filter(Boolean).map((d, i) => (
+                          <li
+                            key={i}
+                            dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(d) }}
+                          />
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {resume.education.length > 0 && (
-        <section className={isCompact ? 'mb-3' : 'mb-4'}>
-          <h2
-            className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
-              isCompact ? 'mb-1.5' : 'mb-2'
-            } ${isClassic ? 'font-serif' : ''}`}
-          >
-            {t('resume.education')}
-          </h2>
-          <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
-            {resume.education.map((e) => (
-              <div key={e.id}>
-                <div className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>
-                  {e.schoolName} – {e.degreeOrTitle}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {e.timePeriod}
-                  {e.subtitle && ` · ${e.subtitle}`}
-                </div>
-                {e.details.filter(Boolean).length > 0 && (
-                  <ul
-                    className={`mt-1 list-disc list-inside text-slate-600 ${
-                      isCompact ? 'text-xs' : 'text-sm'
-                    }`}
-                  >
-                    {e.details.filter(Boolean).map((d, i) => (
-                      <li
-                        key={i}
-                        dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(d) }}
-                      />
-                    ))}
-                  </ul>
-                )}
+            </section>
+          )
+        }
+        if (sec === 'education') {
+          if (!resume.education.length) return null
+          return (
+            <section key={sec} className={isCompact ? 'mb-3' : 'mb-4'}>
+              <h2
+                className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  isCompact ? 'mb-1.5' : 'mb-2'
+                } ${isClassic ? 'font-serif' : ''}`}
+              >
+                {t('resume.education')}
+              </h2>
+              <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
+                {resume.education.map((e) => (
+                  <div key={e.id}>
+                    <div className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                      {e.schoolName} – {e.degreeOrTitle}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {e.timePeriod}
+                      {e.subtitle && ` · ${e.subtitle}`}
+                    </div>
+                    {e.details.filter(Boolean).length > 0 && (
+                      <ul
+                        className={`mt-1 list-disc list-inside text-slate-600 ${
+                          isCompact ? 'text-xs' : 'text-sm'
+                        }`}
+                      >
+                        {e.details.filter(Boolean).map((d, i) => (
+                          <li
+                            key={i}
+                            dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(d) }}
+                          />
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {resume.skills.filter(Boolean).length > 0 && (
-        <section>
-          <h2
-            className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
-              isCompact ? 'mb-1.5' : 'mb-2'
-            } ${isClassic ? 'font-serif' : ''}`}
-          >
-            {t('resume.skills')}
-          </h2>
-          <div className={`flex flex-wrap gap-2 ${isCompact ? 'text-xs' : 'text-sm'}`}>
-            {resume.skills.filter(Boolean).map((s, i) => (
-              <span key={i} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
-                {s}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
+            </section>
+          )
+        }
+        if (sec === 'skills') {
+          const skills = resume.skills.filter(Boolean)
+          if (!skills.length) return null
+          return (
+            <section key={sec}>
+              <h2
+                className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  isCompact ? 'mb-1.5' : 'mb-2'
+                } ${isClassic ? 'font-serif' : ''}`}
+              >
+                {t('resume.skills')}
+              </h2>
+              <div className={`flex flex-wrap gap-2 ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                {skills.map((s, i) => (
+                  <span key={i} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </section>
+          )
+        }
+        return null
+      })}
     </div>
   )
 }

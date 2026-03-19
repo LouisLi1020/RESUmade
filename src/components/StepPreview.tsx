@@ -1,5 +1,17 @@
 import { useEffect, useState } from 'react'
-import type { Resume } from '@/types/resume'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import type { Resume, ResumeSectionId } from '@/types/resume'
+import { defaultSectionsOrder } from '@/types/resume'
 import { useI18n } from '@/i18n/I18nContext'
 import ResumePreview from './ResumePreview'
 import { DraggableExperienceList } from './DraggableSectionList'
@@ -7,6 +19,36 @@ import { DraggableEducationList } from './DraggableSectionList'
 import { getResumePrintHtml } from '@/utils/printHtml'
 import { maskPersonalInfo } from '@/utils/privacy'
 import { analyzeResumeAgainstJD, optimizeResumeForATS } from '@/utils/analyzer'
+
+function SortableSectionItem({ id, label }: { id: ResumeSectionId; label: string }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-2 py-1.5 px-3 rounded border bg-white border-slate-200 ${
+        isDragging ? 'shadow-lg opacity-90' : ''
+      }`}
+    >
+      <button
+        type="button"
+        className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 touch-none"
+        {...attributes}
+        {...listeners}
+        aria-label="Drag section to reorder"
+      >
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M7 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 6a1 1 0 011 1v1a1 1 0 11-2 0V9a1 1 0 011-1zm0 6a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-12a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zm0 6a1 1 0 00-1 1v1a1 1 0 102 0V9a1 1 0 00-1-1zm0 6a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" />
+        </svg>
+      </button>
+      <div className="text-sm text-slate-700">{label}</div>
+    </div>
+  )
+}
 
 type ResumeStyleVariant = 'clean' | 'compact' | 'classic'
 type AdvancedToolsTab = 'ats' | 'jd'
@@ -51,67 +93,23 @@ export default function StepPreview({
     keywords: number
     suggestions: string[]
   } | null>(null)
-  const [aiConfigured, setAiConfigured] = useState(false)
-  const [aiModel, setAiModel] = useState('gpt-4.1-mini')
-  const [apiKeyDraft, setApiKeyDraft] = useState('')
-  const [configMessage, setConfigMessage] = useState<string | null>(null)
-  const [aiBudget, setAiBudget] = useState<{ maxCallsPerSession: number; maxOutputTokens: number; maxInputChars: number } | null>(null)
-  const [aiUsedCalls, setAiUsedCalls] = useState<number>(0)
+  const [sectionsOrder, setSectionsOrder] = useState<ResumeSectionId[]>(defaultSectionsOrder)
+
+  const sectionSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  const handleSectionsDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = sectionsOrder.findIndex((id) => id === active.id)
+    const newIndex = sectionsOrder.findIndex((id) => id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    setSectionsOrder((prev) => arrayMove(prev, oldIndex, newIndex))
+  }
 
   const hasElectron = typeof window !== 'undefined' && window.resumade
-
-  useEffect(() => {
-    if (!showAdvancedTools || !hasElectron) return
-    ;(async () => {
-      const st = await window.resumade!.aiGetStatus()
-      if (st.ok) {
-        setAiConfigured(!!st.configured)
-        if (st.model) setAiModel(st.model)
-      }
-      const b = await window.resumade!.aiGetBudget()
-      if (b.ok && b.budget) {
-        setAiBudget(b.budget)
-        setAiUsedCalls(b.usedCalls ?? 0)
-      }
-    })()
-  }, [showAdvancedTools, hasElectron])
-
-  const handleSaveAIConfig = async () => {
-    if (!hasElectron) return
-    setConfigMessage(null)
-    const key = apiKeyDraft.trim()
-    if (!key) {
-      setConfigMessage('Please paste your OpenAI API key.')
-      return
-    }
-    const res = await window.resumade!.aiSetOpenAIConfig({ apiKey: key, model: aiModel })
-    if (res.ok) {
-      setAiConfigured(true)
-      setApiKeyDraft('')
-      setConfigMessage('Saved for this session.')
-    } else {
-      setConfigMessage(res.error || 'Failed to save config.')
-    }
-  }
-
-  const handleOpenApiKeyPage = async () => {
-    if (!hasElectron) return
-    const res = await window.resumade!.aiOpenApiKeyPage()
-    if (!res.ok) setConfigMessage(res.error || 'Failed to open API key page.')
-  }
-
-  const handleSetSaferBudget = async () => {
-    if (!hasElectron) return
-    // Safe defaults for personal use
-    const budget = { maxCallsPerSession: 15, maxOutputTokens: 700, maxInputChars: 10000 }
-    const res = await window.resumade!.aiSetBudget(budget)
-    if (res.ok) {
-      setAiBudget(budget)
-      setConfigMessage('Budget guard enabled (safe defaults).')
-    } else {
-      setConfigMessage(res.error || 'Failed to set budget.')
-    }
-  }
 
   const handleSaveDraft = async () => {
     if (!hasElectron) {
@@ -160,7 +158,7 @@ export default function StepPreview({
     setExporting(true)
     setMessage(null)
     try {
-      const html = getResumePrintHtml(resume, styleVariant)
+      const html = getResumePrintHtml(resume, styleVariant, sectionsOrder)
       const result = await window.resumade!.exportPdf(html)
       if (result.ok && result.path) {
         setMessage({ type: 'ok', text: t('preview.exportTo', { path: result.path }) })
@@ -237,6 +235,26 @@ export default function StepPreview({
             </button>
           </div>
         </div>
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-slate-600 mb-1">Reorder sections</h3>
+          <p className="text-xs text-slate-500 mb-2">
+            Drag to change the order of introduction, experience, education and skills. PDF export will follow the same order.
+          </p>
+          <DndContext sensors={sectionSensors} collisionDetection={closestCenter} onDragEnd={handleSectionsDragEnd}>
+            <SortableContext items={sectionsOrder} strategy={verticalListSortingStrategy}>
+              <div className="space-y-2">
+                {sectionsOrder.map((sec) => {
+                  let label: string
+                  if (sec === 'introduction') label = t('resume.introduction')
+                  else if (sec === 'experience') label = t('resume.experience')
+                  else if (sec === 'education') label = t('resume.education')
+                  else label = t('resume.skills')
+                  return <SortableSectionItem key={sec} id={sec} label={label} />
+                })}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <DraggableExperienceList
@@ -305,73 +323,36 @@ export default function StepPreview({
           aria-label={t('preview.advancedTools')}
         >
           <div
-            className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6"
+            className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">{t('preview.advancedTools')}</h3>
-            <div className="bg-slate-50 border border-slate-200 rounded p-3 mb-4 space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-xs text-slate-600">
-                  AI provider: <span className="font-medium text-slate-800">OpenAI</span>{' '}
-                  {aiConfigured ? (
-                    <span className="text-green-700 font-medium">• configured</span>
-                  ) : (
-                    <span className="text-amber-700 font-medium">• not configured</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-xs text-slate-500">Model</label>
-                  <input
-                    value={aiModel}
-                    onChange={(e) => setAiModel(e.target.value)}
-                    className="border border-slate-300 rounded px-2 py-1 text-xs w-36"
-                    placeholder="gpt-4.1-mini"
+            <div className="px-6 pt-6 pb-3 border-b border-slate-200 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-semibold text-slate-800">
+                {t('preview.advancedTools')}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedTools(false)}
+                className="text-slate-400 hover:text-slate-600"
+                aria-label={t('common.back')}
+              >
+                <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M10 8.586l4.95-4.95 1.414 1.414L11.414 10l4.95 4.95-1.414 1.414L10 11.414l-4.95 4.95-1.414-1.414L8.586 10l-4.95-4.95L5.05 3.636 10 8.586z"
+                    clipRule="evenodd"
                   />
-                </div>
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto">
+            <div className="bg-slate-50 border border-slate-200 rounded p-3 mb-4 space-y-1">
+              <div className="text-xs text-slate-700 font-medium">
+                This analysis runs locally in this desktop app. No external API key is required.
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  value={apiKeyDraft}
-                  onChange={(e) => setApiKeyDraft(e.target.value)}
-                  className="flex-1 min-w-[220px] border border-slate-300 rounded px-2 py-1 text-xs"
-                  placeholder="Paste OpenAI API key (stored in-memory for this session)"
-                  type="password"
-                  autoComplete="off"
-                  spellCheck={false}
-                />
-                <button
-                  type="button"
-                  onClick={handleSaveAIConfig}
-                  className="bg-slate-800 text-white px-3 py-1.5 rounded text-xs hover:bg-slate-700"
-                >
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={handleOpenApiKeyPage}
-                  className="bg-white text-slate-700 px-3 py-1.5 rounded text-xs border border-slate-300 hover:bg-slate-100"
-                >
-                  Get API key
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSetSaferBudget}
-                  className="bg-white text-slate-700 px-3 py-1.5 rounded text-xs border border-slate-300 hover:bg-slate-100"
-                >
-                  Enable budget guard
-                </button>
+              <div className="text-xs text-slate-500">
+                Scores and suggestions are heuristic only and meant as a light guide, not a formal ATS score.
               </div>
-              <div className="text-xs text-slate-600 space-y-1">
-                <div>Uses your own OpenAI API key. You are responsible for API usage costs.</div>
-                <div>We do not store your key; it stays on your device (in-memory for this session).</div>
-                {aiBudget && (
-                  <div className="text-slate-500">
-                    Budget: max {aiBudget.maxCallsPerSession} calls/session, max {aiBudget.maxOutputTokens} output tokens/call, max {aiBudget.maxInputChars} input chars.
-                    {' '}Used: {aiUsedCalls}.
-                  </div>
-                )}
-              </div>
-              {configMessage && <div className="text-xs text-slate-600">{configMessage}</div>}
             </div>
             <div className="flex gap-2 border-b border-slate-200 mb-4">
               <button
@@ -420,7 +401,7 @@ export default function StepPreview({
                   <button
                     type="button"
                     onClick={handleRunAtsOptimization}
-                    disabled={atsAnalyzing || !aiConfigured}
+                    disabled={atsAnalyzing}
                     className="bg-slate-800 text-white px-3 py-1.5 rounded text-sm hover:bg-slate-700 disabled:opacity-50"
                   >
                     {atsAnalyzing ? 'Analyzing…' : 'Run ATS optimization (AI)'}
@@ -492,7 +473,7 @@ export default function StepPreview({
                   <button
                     type="button"
                     onClick={handleRunJdAnalysis}
-                    disabled={jdAnalyzing || !jdText.trim() || !aiConfigured}
+                    disabled={jdAnalyzing || !jdText.trim()}
                     className="bg-slate-800 text-white px-3 py-1.5 rounded text-sm hover:bg-slate-700 disabled:opacity-50"
                   >
                     {jdAnalyzing ? 'Analyzing…' : 'Run JD matching (AI)'}
@@ -528,14 +509,6 @@ export default function StepPreview({
                 )}
               </div>
             )}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowAdvancedTools(false)}
-                className="bg-slate-200 text-slate-800 px-4 py-2 rounded hover:bg-slate-300"
-              >
-                {t('common.back')}
-              </button>
             </div>
           </div>
         </div>
@@ -543,7 +516,7 @@ export default function StepPreview({
 
       <div className="bg-slate-100 rounded-lg p-4">
         <h3 className="text-sm font-medium text-slate-600 mb-3">{t('preview.resumePreview')}</h3>
-        <ResumePreview resume={resume} styleVariant={styleVariant} />
+        <ResumePreview resume={resume} styleVariant={styleVariant} sectionsOrder={sectionsOrder} />
       </div>
     </div>
   )

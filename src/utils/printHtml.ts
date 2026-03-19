@@ -1,4 +1,5 @@
-import type { Resume, LinkKind } from '@/types/resume'
+import type { Resume, LinkKind, ResumeSectionId } from '@/types/resume'
+import { defaultSectionsOrder } from '@/types/resume'
 import { getLinkDisplayText, inferLinkKindFromUrl } from '@/utils/linkDisplay'
 import { inlineMarkdownToHtml } from '@/utils/markdown'
 
@@ -117,7 +118,11 @@ function getStyleCss(variant: ResumeStyleVariant): string {
   `
 }
 
-export function getResumePrintHtml(resume: Resume, styleVariant: ResumeStyleVariant = 'clean'): string {
+export function getResumePrintHtml(
+  resume: Resume,
+  styleVariant: ResumeStyleVariant = 'clean',
+  sectionsOrder?: ResumeSectionId[],
+): string {
   const p = resume.personal
   const legal = p.legalName?.trim() || ''
   const preferred = (p.showPreferredName !== false && p.preferredName?.trim()) ? p.preferredName.trim() : ''
@@ -141,21 +146,12 @@ export function getResumePrintHtml(resume: Resume, styleVariant: ResumeStyleVari
     })
   const contactHtml = contactParts.length ? `<div class="contact">${contactParts.join('')}</div>` : ''
 
-  let html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Resume - ${escapeHtml(name)}</title>
-  <style>
-  ${getStyleCss(styleVariant)}
-  </style>
-</head>
-<body>
-  <h1>${escapeHtml(name)}</h1>
-  ${contactHtml}
-  ${resume.introduction.trim() ? `<section class="intro"><h2>Introduction</h2><p>${inlineMarkdownToHtml(resume.introduction.trim())}</p></section>` : ''}
-  ${resume.experiences.length ? `
+  const introHtml = resume.introduction.trim()
+    ? `<section class="intro"><h2>Introduction</h2><p>${inlineMarkdownToHtml(resume.introduction.trim())}</p></section>`
+    : ''
+
+  const experienceHtml = resume.experiences.length
+    ? `
   <section>
     <h2>Experience</h2>
     ${resume.experiences
@@ -171,8 +167,11 @@ export function getResumePrintHtml(resume: Resume, styleVariant: ResumeStyleVari
     </div>`
       )
       .join('')}
-  </section>` : ''}
-  ${resume.education.length ? `
+  </section>`
+    : ''
+
+  const educationHtml = resume.education.length
+    ? `
   <section>
     <h2>Education</h2>
     ${resume.education
@@ -188,12 +187,47 @@ export function getResumePrintHtml(resume: Resume, styleVariant: ResumeStyleVari
     </div>`
       )
       .join('')}
-  </section>` : ''}
-  ${resume.skills.filter(Boolean).length ? `
+  </section>`
+    : ''
+
+  const skillsList = resume.skills.filter(Boolean)
+  const skillsHtml = skillsList.length
+    ? `
   <section>
     <h2>Skills</h2>
-    <div class="skills">${resume.skills.filter(Boolean).map((s) => `<span>${escapeHtml(s)}</span>`).join('')}</div>
-  </section>` : ''}
+    <div class="skills">${skillsList.map((s) => `<span>${escapeHtml(s)}</span>`).join('')}</div>
+  </section>`
+    : ''
+
+  const order: ResumeSectionId[] = sectionsOrder && sectionsOrder.length
+    ? sectionsOrder
+    : defaultSectionsOrder
+
+  const bodySections = order
+    .map((sec) => {
+      if (sec === 'introduction') return introHtml
+      if (sec === 'experience') return experienceHtml
+      if (sec === 'education') return educationHtml
+      if (sec === 'skills') return skillsHtml
+      return ''
+    })
+    .filter(Boolean)
+    .join('\n')
+
+  let html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Resume - ${escapeHtml(name)}</title>
+  <style>
+  ${getStyleCss(styleVariant)}
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(name)}</h1>
+  ${contactHtml}
+  ${bodySections}
 </body>
 </html>`
   return html
