@@ -12,7 +12,10 @@ export type Messages = {
     experience: string
     education: string
     skills: string
+    certifications: string
+    references: string
     preview: string
+    aiPrompts: string
   }
   common: {
     back: string
@@ -111,6 +114,8 @@ export type Messages = {
     experience: string
     education: string
     skills: string
+    certifications: string
+    references: string
   }
   a11y: {
     dragToReorder: string

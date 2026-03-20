@@ -40,7 +40,33 @@ export interface Education {
   details: string[]
 }
 
-export type ResumeSectionId = 'introduction' | 'experience' | 'education' | 'skills'
+export interface CertificationQualification {
+  id: string
+  title: string
+  issuer: string
+  issueDate: string
+  details: string[]
+}
+
+export interface Reference {
+  id: string
+  name: string
+  company: string
+  roleOrRelation: string
+  contactEmail: string
+  contactPhone: string
+  contactLink: string
+  /** When false, show only basic info and ask contact info upon request. */
+  showContactInfo: boolean
+}
+
+export type ResumeSectionId =
+  | 'introduction'
+  | 'experience'
+  | 'education'
+  | 'skills'
+  | 'certifications'
+  | 'references'
 
 export interface Resume {
   personal: Personal
@@ -48,6 +74,8 @@ export interface Resume {
   experiences: Experience[]
   education: Education[]
   skills: string[]
+  certifications: CertificationQualification[]
+  references: Reference[]
 }
 
 export const defaultSectionsOrder: ResumeSectionId[] = [
@@ -55,6 +83,8 @@ export const defaultSectionsOrder: ResumeSectionId[] = [
   'experience',
   'education',
   'skills',
+  'certifications',
+  'references',
 ]
 
 export const createEmptyPersonal = (): Personal => ({
@@ -85,10 +115,31 @@ export const createEmptyEducation = (): Education => ({
   details: [],
 })
 
+export const createEmptyCertification = (): CertificationQualification => ({
+  id: '',
+  title: '',
+  issuer: '',
+  issueDate: '',
+  details: [],
+})
+
+export const createEmptyReference = (): Reference => ({
+  id: '',
+  name: '',
+  company: '',
+  roleOrRelation: '',
+  contactEmail: '',
+  contactPhone: '',
+  contactLink: '',
+  showContactInfo: false,
+})
+
 export const createEmptyResume = (): Resume => ({
   personal: createEmptyPersonal(),
   introduction: '',
   experiences: [],
   education: [],
   skills: [],
+  certifications: [],
+  references: [],
 })

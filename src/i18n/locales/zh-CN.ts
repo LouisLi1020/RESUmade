@@ -12,7 +12,10 @@ export const zhCN: Messages = {
     experience: '经历',
     education: '学历',
     skills: '技能',
+    certifications: '证照/资质',
+    references: '推荐人',
     preview: '预览与编辑',
+    aiPrompts: 'AI 提示词',
   },
   common: {
     back: '上一步',
@@ -111,6 +114,8 @@ export const zhCN: Messages = {
     experience: '经历',
     education: '学历',
     skills: '技能',
+    certifications: '证照/资质',
+    references: '推荐人',
   },
   a11y: {
     dragToReorder: '拖拽以调整顺序',

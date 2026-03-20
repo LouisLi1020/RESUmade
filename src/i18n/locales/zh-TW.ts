@@ -12,7 +12,10 @@ export const zhTW: Messages = {
     experience: '經歷',
     education: '學歷',
     skills: '技能',
+    certifications: '證照/資質',
+    references: '推薦人',
     preview: '預覽與編輯',
+    aiPrompts: 'AI 提示詞',
   },
   common: {
     back: '上一步',
@@ -111,6 +114,8 @@ export const zhTW: Messages = {
     experience: '經歷',
     education: '學歷',
     skills: '技能',
+    certifications: '證照/資質',
+    references: '推薦人',
   },
   a11y: {
     dragToReorder: '拖曳以調整順序',

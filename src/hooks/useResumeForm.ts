@@ -1,9 +1,18 @@
 import { useState, useCallback } from 'react'
-import type { Resume, Experience, Education } from '@/types/resume'
+import type {
+  Resume,
+  Experience,
+  Education,
+  CertificationQualification,
+  Reference,
+} from '@/types/resume'
 import {
   createEmptyResume,
   createEmptyExperience,
   createEmptyEducation,
+  createEmptyPersonal,
+  createEmptyCertification,
+  createEmptyReference,
 } from '@/types/resume'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -66,12 +75,60 @@ export function useResumeForm(initial?: Resume | null) {
     setResume((r) => ({ ...r, education: reordered }))
   }, [])
 
+  const addCertification = useCallback(() => {
+    const newCert: CertificationQualification = {
+      ...createEmptyCertification(),
+      id: uuidv4(),
+    }
+    setResume((r) => ({ ...r, certifications: [...r.certifications, newCert] }))
+  }, [])
+
+  const updateCertification = useCallback((id: string, patch: Partial<CertificationQualification>) => {
+    setResume((r) => ({
+      ...r,
+      certifications: r.certifications.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    }))
+  }, [])
+
+  const removeCertification = useCallback((id: string) => {
+    setResume((r) => ({ ...r, certifications: r.certifications.filter((c) => c.id !== id) }))
+  }, [])
+
+  const addReference = useCallback(() => {
+    const newRef: Reference = {
+      ...createEmptyReference(),
+      id: uuidv4(),
+    }
+    setResume((r) => ({ ...r, references: [...r.references, newRef] }))
+  }, [])
+
+  const updateReference = useCallback((id: string, patch: Partial<Reference>) => {
+    setResume((r) => ({
+      ...r,
+      references: r.references.map((ref) => (ref.id === id ? { ...ref, ...patch } : ref)),
+    }))
+  }, [])
+
+  const removeReference = useCallback((id: string) => {
+    setResume((r) => ({ ...r, references: r.references.filter((ref) => ref.id !== id) }))
+  }, [])
+
   const setSkills = useCallback((skills: string[]) => {
     setResume((r) => ({ ...r, skills: skills.slice(0, MAX_SKILLS) }))
   }, [])
 
   const loadResume = useCallback((data: Resume) => {
-    setResume(data)
+    // Backward-compat: older drafts may not contain new optional fields.
+    setResume({
+      ...createEmptyResume(),
+      ...data,
+      personal: { ...createEmptyPersonal(), ...(data.personal ?? {}) },
+      experiences: data.experiences ?? [],
+      education: data.education ?? [],
+      skills: data.skills ?? [],
+      certifications: data.certifications ?? [],
+      references: data.references ?? [],
+    })
   }, [])
 
   const resetResume = useCallback(() => {
@@ -91,6 +148,12 @@ export function useResumeForm(initial?: Resume | null) {
     removeEducation,
     reorderEducation,
     setSkills,
+    addCertification,
+    updateCertification,
+    removeCertification,
+    addReference,
+    updateReference,
+    removeReference,
     loadResume,
     resetResume,
     maxSkills: MAX_SKILLS,

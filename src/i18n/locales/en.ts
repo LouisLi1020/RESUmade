@@ -12,7 +12,10 @@ export const en: Messages = {
     experience: 'Experience',
     education: 'Education',
     skills: 'Skills',
+    certifications: 'Certifications',
+    references: 'References',
     preview: 'Preview & Edit',
+    aiPrompts: 'AI Prompts',
   },
   common: {
     back: 'Back',
@@ -111,6 +114,8 @@ export const en: Messages = {
     experience: 'Experience',
     education: 'Education',
     skills: 'Skills',
+    certifications: 'Certifications',
+    references: 'References',
   },
   a11y: {
     dragToReorder: 'Drag to reorder',

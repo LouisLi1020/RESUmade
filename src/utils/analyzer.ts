@@ -40,7 +40,7 @@ export async function analyzeResumeAgainstJD(payload: AnalyzeJDPayload): Promise
   const skills = masked.skills.filter(Boolean).map((s) => s.toLowerCase())
   const experienceTexts = masked.experiences
     .flatMap((e) => [e.companyOrProjectName, e.title, e.subtitle, ...e.details])
-    .filter(Boolean)
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0)
     .map((s) => s.toLowerCase())
 
   const jdTokens = new Set(

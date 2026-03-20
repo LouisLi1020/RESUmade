@@ -61,6 +61,8 @@ export function getLinkDisplayText(link: LinkItem, options?: { showFullUrls?: bo
   const url = (link.url ?? '').trim()
   if (!url) return ''
 
+  if (options?.showFullUrls) return url
+
   const parsed = normalizeUrl(url)
   if (!parsed) return url
 

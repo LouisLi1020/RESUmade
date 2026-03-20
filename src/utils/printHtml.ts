@@ -199,6 +199,69 @@ export function getResumePrintHtml(
   </section>`
     : ''
 
+  const certsList = resume.certifications.filter((c) => {
+    const hasCore = !!c.title.trim() || !!c.issuer.trim() || !!c.issueDate.trim()
+    const hasDetails = c.details?.filter(Boolean).length > 0
+    return hasCore || hasDetails
+  })
+
+  const certsHtml = certsList.length
+    ? `
+  <section>
+    <h2>Certifications</h2>
+    ${certsList
+      .map(
+        (c) => `
+    <div class="block">
+      <div class="block-title">${escapeHtml(c.title)}</div>
+      <div class="block-meta">${escapeHtml(c.issuer)}${c.issueDate ? ` · ${escapeHtml(c.issueDate)}` : ''}</div>
+      ${
+        c.details.filter(Boolean).length
+          ? `<ul>${c.details
+              .filter(Boolean)
+              .map((d) => `<li>${inlineMarkdownToHtml(d)}</li>`)
+              .join('')}</ul>`
+          : ''
+      }
+    </div>`
+      )
+      .join('')}
+  </section>`
+    : ''
+
+  const refsHtml = resume.references.length
+    ? `
+  <section>
+    <h2>References</h2>
+    ${resume.references
+      .map(
+        (r) => {
+          const name = escapeHtml(r.name || '—')
+          const metaParts = []
+          if (r.company) metaParts.push(escapeHtml(r.company))
+          if (r.roleOrRelation) metaParts.push(escapeHtml(r.roleOrRelation))
+          const meta = metaParts.length ? metaParts.join(' · ') : ''
+
+          const contactShown = r.showContactInfo
+          const contactParts: string[] = []
+          if (contactShown) {
+            if (r.contactEmail) contactParts.push(`Email: ${escapeHtml(r.contactEmail)}`)
+            if (r.contactPhone) contactParts.push(`Phone: ${escapeHtml(r.contactPhone)}`)
+            if (r.contactLink) contactParts.push(`Link: ${escapeHtml(r.contactLink)}`)
+          }
+          const contactLine = contactParts.length ? contactParts.join(' · ') : 'Available upon request'
+
+          return `
+    <div class="block">
+      <div class="block-title">${name}</div>
+      <div class="block-meta">${meta}${meta && contactLine ? ` · ${escapeHtml(contactLine)}` : escapeHtml(contactLine)}</div>
+    </div>`
+        }
+      )
+      .join('')}
+  </section>`
+    : ''
+
   const order: ResumeSectionId[] = sectionsOrder && sectionsOrder.length
     ? sectionsOrder
     : defaultSectionsOrder
@@ -209,6 +272,8 @@ export function getResumePrintHtml(
       if (sec === 'experience') return experienceHtml
       if (sec === 'education') return educationHtml
       if (sec === 'skills') return skillsHtml
+      if (sec === 'certifications') return certsHtml
+      if (sec === 'references') return refsHtml
       return ''
     })
     .filter(Boolean)

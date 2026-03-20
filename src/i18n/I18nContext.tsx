@@ -75,7 +75,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       messages.steps.experience,
       messages.steps.education,
       messages.steps.skills,
+      messages.steps.certifications,
+      messages.steps.references,
       messages.steps.preview,
+      messages.steps.aiPrompts,
     ],
     [messages]
   )

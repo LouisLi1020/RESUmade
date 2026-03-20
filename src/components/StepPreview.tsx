@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -58,6 +58,7 @@ interface StepPreviewProps {
   onReorderExperiences: (reordered: Resume['experiences']) => void
   onReorderEducation: (reordered: Resume['education']) => void
   onReorderSkills: (reordered: string[]) => void
+  onNext: () => void
 }
 
 export default function StepPreview({
@@ -66,6 +67,7 @@ export default function StepPreview({
   onReorderExperiences,
   onReorderEducation,
   onReorderSkills,
+  onNext,
 }: StepPreviewProps) {
   const { t } = useI18n()
   const [saving, setSaving] = useState(false)
@@ -249,7 +251,10 @@ export default function StepPreview({
                   if (sec === 'introduction') label = t('resume.introduction')
                   else if (sec === 'experience') label = t('resume.experience')
                   else if (sec === 'education') label = t('resume.education')
-                  else label = t('resume.skills')
+                  else if (sec === 'skills') label = t('resume.skills')
+                  else if (sec === 'certifications') label = t('resume.certifications')
+                  else if (sec === 'references') label = t('resume.references')
+                  else label = sec
                   return <SortableSectionItem key={sec} id={sec} label={label} />
                 })}
               </div>
@@ -290,6 +295,13 @@ export default function StepPreview({
             className="bg-slate-200 text-slate-800 px-4 py-2 rounded hover:bg-slate-300"
           >
             {t('common.back')}
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            className="bg-slate-300 text-slate-800 px-4 py-2 rounded hover:bg-slate-200 border border-slate-300"
+          >
+            Next → AI Prompts
           </button>
           <button
             type="button"

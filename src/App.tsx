@@ -9,8 +9,21 @@ import StepExperienceForm from '@/components/StepExperienceForm'
 import StepEducationForm from '@/components/StepEducationForm'
 import StepSkillsForm from '@/components/StepSkillsForm'
 import StepPreview from '@/components/StepPreview'
+import StepCertificationsForm from '@/components/StepCertificationsForm'
+import StepReferencesForm from '@/components/StepReferencesForm'
+import StepAIPrompts from '@/components/StepAIPrompts'
 
-const STEP_IDS = ['personal', 'introduction', 'experience', 'education', 'skills', 'preview'] as const
+const STEP_IDS = [
+  'personal',
+  'introduction',
+  'experience',
+  'education',
+  'skills',
+  'certifications',
+  'references',
+  'preview',
+  'ai-prompts',
+] as const
 
 const hasElectron = typeof window !== 'undefined' && window.resumade
 
@@ -113,6 +126,26 @@ export default function App() {
             onNext={goNext}
           />
         )}
+        {stepId === 'certifications' && (
+          <StepCertificationsForm
+            certifications={form.resume.certifications}
+            onAdd={form.addCertification}
+            onUpdate={form.updateCertification}
+            onRemove={form.removeCertification}
+            onPrev={goPrev}
+            onNext={goNext}
+          />
+        )}
+        {stepId === 'references' && (
+          <StepReferencesForm
+            references={form.resume.references}
+            onAdd={form.addReference}
+            onUpdate={form.updateReference}
+            onRemove={form.removeReference}
+            onPrev={goPrev}
+            onNext={goNext}
+          />
+        )}
         {stepId === 'preview' && (
           <StepPreview
             resume={form.resume}
@@ -120,8 +153,10 @@ export default function App() {
             onReorderExperiences={form.reorderExperiences}
             onReorderEducation={form.reorderEducation}
             onReorderSkills={form.setSkills}
+            onNext={goNext}
           />
         )}
+        {stepId === 'ai-prompts' && <StepAIPrompts resume={form.resume} onPrev={goPrev} />}
       </main>
     </div>
   )

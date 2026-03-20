@@ -341,6 +341,90 @@ export default function ResumePreview({
             </section>
           )
         }
+        if (sec === 'certifications') {
+          const certs = resume.certifications.filter((c) => {
+            const hasCore = !!c.title.trim() || !!c.issuer.trim() || !!c.issueDate.trim()
+            const hasDetails = c.details?.filter(Boolean).length > 0
+            return hasCore || hasDetails
+          })
+          if (!certs.length) return null
+          return (
+            <section key={sec} className={isCompact ? 'mb-3' : 'mb-4'}>
+              <h2
+                className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  isCompact ? 'mb-1.5' : 'mb-2'
+                } ${isClassic ? 'font-serif' : ''}`}
+              >
+                {t('resume.certifications')}
+              </h2>
+              <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
+                {certs.map((c) => (
+                  <div key={c.id}>
+                    <div className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                      {c.title}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {c.issuer && c.issuer}
+                      {c.issueDate ? `${c.issuer ? ' · ' : ''}${c.issueDate}` : ''}
+                    </div>
+                    {c.details.filter(Boolean).length > 0 && (
+                      <ul
+                        className={`mt-1 list-disc list-inside text-slate-600 ${
+                          isCompact ? 'text-xs' : 'text-sm'
+                        }`}
+                      >
+                        {c.details.filter(Boolean).map((d, i) => (
+                          <li
+                            key={i}
+                            dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(d) }}
+                          />
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        }
+        if (sec === 'references') {
+          if (!resume.references.length) return null
+          return (
+            <section key={sec} className={isCompact ? 'mb-3' : 'mb-4'}>
+              <h2
+                className={`text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  isCompact ? 'mb-1.5' : 'mb-2'
+                } ${isClassic ? 'font-serif' : ''}`}
+              >
+                {t('resume.references')}
+              </h2>
+              <div className={isCompact ? 'space-y-2' : 'space-y-3'}>
+                {resume.references.map((r) => (
+                  <div key={r.id}>
+                    <div className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                      {r.name || t('common.untitled')}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {(r.company || r.roleOrRelation) ? `${r.company || ''}${r.company && r.roleOrRelation ? ' · ' : ''}${r.roleOrRelation || ''}` : '—'}
+                    </div>
+                    <div className="text-xs text-slate-600">
+                      {r.showContactInfo ? (
+                        <>
+                          {r.contactEmail ? `Email: ${r.contactEmail}` : ''}
+                          {r.contactPhone ? `${r.contactEmail ? ' · ' : ''}Phone: ${r.contactPhone}` : ''}
+                          {r.contactLink ? `${(r.contactEmail || r.contactPhone) ? ' · ' : ''}${r.contactLink}` : ''}
+                          {(!r.contactEmail && !r.contactPhone && !r.contactLink) ? 'Available upon request' : null}
+                        </>
+                      ) : (
+                        'Available upon request'
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        }
         return null
       })}
     </div>
