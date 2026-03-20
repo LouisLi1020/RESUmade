@@ -85,6 +85,7 @@ export const zhTW: Messages = {
     dragHint: '可拖曳下方項目調整「經歷」與「學歷」的顯示順序。',
     reorderExperience: '拖曳以調整經歷順序',
     reorderEducation: '拖曳以調整學歷順序',
+    reorderSkills: '拖曳以調整技能順序',
     resumePreview: '履歷預覽',
     saveDraft: '儲存草稿',
     saving: '儲存中…',

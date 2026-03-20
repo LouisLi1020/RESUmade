@@ -14,8 +14,7 @@ import type { Resume, ResumeSectionId } from '@/types/resume'
 import { defaultSectionsOrder } from '@/types/resume'
 import { useI18n } from '@/i18n/I18nContext'
 import ResumePreview from './ResumePreview'
-import { DraggableExperienceList } from './DraggableSectionList'
-import { DraggableEducationList } from './DraggableSectionList'
+import { DraggableExperienceList, DraggableEducationList, DraggableSkillsList } from './DraggableSectionList'
 import { getResumePrintHtml } from '@/utils/printHtml'
 import { maskPersonalInfo } from '@/utils/privacy'
 import { analyzeResumeAgainstJD, optimizeResumeForATS } from '@/utils/analyzer'
@@ -58,6 +57,7 @@ interface StepPreviewProps {
   onPrev: () => void
   onReorderExperiences: (reordered: Resume['experiences']) => void
   onReorderEducation: (reordered: Resume['education']) => void
+  onReorderSkills: (reordered: string[]) => void
 }
 
 export default function StepPreview({
@@ -65,6 +65,7 @@ export default function StepPreview({
   onPrev,
   onReorderExperiences,
   onReorderEducation,
+  onReorderSkills,
 }: StepPreviewProps) {
   const { t } = useI18n()
   const [saving, setSaving] = useState(false)
@@ -268,6 +269,12 @@ export default function StepPreview({
               onReorder={onReorderEducation}
             />
           </div>
+        </div>
+        <div className="mb-6">
+          <DraggableSkillsList
+            skills={resume.skills}
+            onReorder={onReorderSkills}
+          />
         </div>
         {message && (
           <p

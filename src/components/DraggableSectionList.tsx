@@ -140,3 +140,74 @@ export function DraggableEducationList({ education, onReorder }: DraggableEducat
     </div>
   )
 }
+
+interface DraggableSkillsListProps {
+  skills: string[]
+  onReorder: (reordered: string[]) => void
+}
+
+function SortableSkillItem({ id, label }: { id: string; label: string }) {
+  const { t } = useI18n()
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-2 py-2 px-3 rounded border bg-white border-slate-200 ${isDragging ? 'shadow-lg opacity-90' : ''}`}
+    >
+      <button
+        type="button"
+        className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 touch-none"
+        {...attributes}
+        {...listeners}
+        aria-label={t('a11y.dragToReorder')}
+      >
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M7 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 6a1 1 0 011 1v1a1 1 0 11-2 0V9a1 1 0 011-1zm0 6a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-12a1 1 0 00-1 1v1a1 1 0 102 0V3a1 1 0 00-1-1zm0 6a1 1 0 00-1 1v1a1 1 0 102 0V9a1 1 0 00-1-1zm0 6a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" />
+        </svg>
+      </button>
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-sm truncate">{label || t('common.untitled')}</div>
+      </div>
+    </div>
+  )
+}
+
+export function DraggableSkillsList({ skills, onReorder }: DraggableSkillsListProps) {
+  const { t } = useI18n()
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+  const ids = skills.map((_, i) => `skill-${i}`)
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = ids.indexOf(active.id as string)
+    const newIndex = ids.indexOf(over.id as string)
+    if (oldIndex === -1 || newIndex === -1) return
+    onReorder(arrayMove(skills, oldIndex, newIndex))
+  }
+
+  if (skills.length === 0) return null
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-slate-600">{t('preview.reorderSkills')}</h3>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          <div className="space-y-2">
+            {skills.map((s, i) => (
+              <SortableSkillItem key={ids[i]} id={ids[i]} label={s} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+    </div>
+  )
+}

@@ -85,6 +85,7 @@ export type Messages = {
     dragHint: string
     reorderExperience: string
     reorderEducation: string
+    reorderSkills: string
     resumePreview: string
     saveDraft: string
     saving: string

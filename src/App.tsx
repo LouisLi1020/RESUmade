@@ -119,6 +119,7 @@ export default function App() {
             onPrev={goPrev}
             onReorderExperiences={form.reorderExperiences}
             onReorderEducation={form.reorderEducation}
+            onReorderSkills={form.setSkills}
           />
         )}
       </main>

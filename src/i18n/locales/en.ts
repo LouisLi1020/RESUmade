@@ -85,6 +85,7 @@ export const en: Messages = {
     dragHint: 'Drag the items below to change the order of experience and education on your resume.',
     reorderExperience: 'Drag to reorder experience',
     reorderEducation: 'Drag to reorder education',
+    reorderSkills: 'Drag to reorder skills',
     resumePreview: 'Resume preview',
     saveDraft: 'Save draft',
     saving: 'Saving…',

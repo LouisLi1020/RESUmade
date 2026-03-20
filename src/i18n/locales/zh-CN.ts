@@ -85,6 +85,7 @@ export const zhCN: Messages = {
     dragHint: '可拖拽下方项目调整「经历」与「学历」的显示顺序。',
     reorderExperience: '拖拽以调整经历顺序',
     reorderEducation: '拖拽以调整学历顺序',
+    reorderSkills: '拖拽以调整技能顺序',
     resumePreview: '简历预览',
     saveDraft: '保存草稿',
     saving: '保存中…',
